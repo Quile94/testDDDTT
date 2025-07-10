@@ -4,16 +4,16 @@
 <title>Đang Chuyển Hướng - Vui Lòng Chờ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    /* CSS của bạn giữ nguyên ở đây */
+    /* CSS để tạo kiểu cho trang */
     body {
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        min-height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
         margin: 0;
-        background-color: #f0f2f5;
+        background-color: #f0f2f5; /* Màu nền nhẹ nhàng */
         color: #333;
         text-align: center;
     }
@@ -29,8 +29,22 @@
         align-items: center;
     }
 
+    /* CSS cho dòng chữ nổi bật */
+    .headline-container {
+        margin-bottom: 25px; /* Khoảng cách dưới dòng chữ to */
+    }
+
+    .headline-text {
+        font-size: 3.5em; /* Kích thước chữ rất to */
+        color: #e65100; /* Màu cam đậm nổi bật */
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ cho chữ */
+        line-height: 1.2; /* Chiều cao dòng */
+    }
+
+
     .loading-image {
-        width: 100px;
+        width: 100px; /* Kích thước hình ảnh tải */
         height: 100px;
         margin-bottom: 25px;
     }
@@ -39,7 +53,7 @@
         font-size: 24px;
         font-weight: bold;
         margin-bottom: 15px;
-        color: #007bff;
+        color: #007bff; /* Màu sắc nổi bật cho văn bản */
     }
 
     .redirect-message {
@@ -60,9 +74,9 @@
     .progress-bar-fill {
         height: 100%;
         width: 0;
-        background-color: #28a745;
+        background-color: #28a745; /* Màu xanh lá cây */
         border-radius: 4px;
-        transition: width linear;
+        transition: width linear; /* Tạo hiệu ứng chuyển động mượt mà */
     }
 
     .link-note {
@@ -70,6 +84,7 @@
         color: #888;
     }
 
+    /* Ẩn nội dung khi JavaScript không bật */
     noscript {
         display: block;
         margin-top: 20px;
@@ -80,6 +95,9 @@
 </head>
 <body>
     <div class="loading-container">
+        <div class="headline-container">
+            <h1 class="headline-text">Discord Dâm Đồ Diệc Tu Tiên</h1>
+        </div>
         <img src="image.jpg" alt="Đang tải..." class="loading-image">
 
         <p class="loading-text">Đang tải và chuyển hướng...</p>
@@ -89,7 +107,7 @@
             <div id="progressBarFill" class="progress-bar-fill"></div>
         </div>
 
-        <p class="link-note">Cảm ơn bạn đã tin tưởng và sử dụng việt hóa của chúng tôi</p>
+        <p class="link-note">Cảm ơn bạn đã sử dụng việt hóa của discord chúng tôi!</p>
     </div>
 
     <noscript>
