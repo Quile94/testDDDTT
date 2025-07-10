@@ -4,16 +4,16 @@
 <title>Đang Chuyển Hướng - Vui Lòng Chờ</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    /* CSS để tạo kiểu cho trang */
+    /* CSS của bạn giữ nguyên ở đây */
     body {
         font-family: Arial, sans-serif;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        min-height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+        min-height: 100vh;
         margin: 0;
-        background-color: #f0f2f5; /* Màu nền nhẹ nhàng */
+        background-color: #f0f2f5;
         color: #333;
         text-align: center;
     }
@@ -30,7 +30,7 @@
     }
 
     .loading-image {
-        width: 100px; /* Kích thước hình ảnh tải */
+        width: 100px;
         height: 100px;
         margin-bottom: 25px;
     }
@@ -39,7 +39,7 @@
         font-size: 24px;
         font-weight: bold;
         margin-bottom: 15px;
-        color: #007bff; /* Màu sắc nổi bật cho văn bản */
+        color: #007bff;
     }
 
     .redirect-message {
@@ -60,9 +60,9 @@
     .progress-bar-fill {
         height: 100%;
         width: 0;
-        background-color: #28a745; /* Màu xanh lá cây */
+        background-color: #28a745;
         border-radius: 4px;
-        transition: width linear; /* Tạo hiệu ứng chuyển động mượt mà */
+        transition: width linear;
     }
 
     .link-note {
@@ -70,7 +70,6 @@
         color: #888;
     }
 
-    /* Ẩn nội dung khi JavaScript không bật */
     noscript {
         display: block;
         margin-top: 20px;
@@ -100,15 +99,14 @@
 
     <script>
         // --- Cấu hình chuyển hướng ---
-        const REDIRECT_DELAY_MS = 2000; // THAY THẾ NÀY: Thời gian trễ trước khi chuyển hướng (ví dụ: 2000ms = 2 giây)
-        const DEFAULT_FALLBACK_URL = 'https://www.google.com/search?q=lỗi+chuyển+hướng+chung'; // THAY THẾ NÀY: URL dự phòng nếu có lỗi
-        const DATA_FOLDER = 'data/'; // THAY THẾ NÀY: Tên thư mục chứa các tệp JSON nhóm của bạn
+        const REDIRECT_DELAY_MS = 2000; // Thời gian trễ trước khi chuyển hướng (ví dụ: 2000ms = 2 giây)
+        const DEFAULT_FALLBACK_URL = 'https://www.google.com/search?q=lỗi+chuyển+hướng+chung'; // URL dự phòng nếu có lỗi
+        const LINKS_JSON_FILE = 'links.json'; // Tên tệp JSON chứa tất cả liên kết (nằm ở thư mục gốc)
 
         // --- Logic JavaScript ---
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const groupId = urlParams.get('id');
-            const linkKey = urlParams.get('link');
+            const linkId = urlParams.get('id'); // Lấy ID từ URL, ví dụ: ?id=qcbh-vh
 
             const progressBarFill = document.getElementById('progressBarFill');
 
@@ -120,29 +118,28 @@
                 }, 50); // Bắt đầu animation sau một chút để đảm bảo DOM sẵn sàng
             }
 
-
-            if (!groupId || !linkKey) {
-                console.error('Thiếu tham số groupId hoặc linkKey trong URL.');
+            if (!linkId) {
+                console.error('Thiếu tham số ID trong URL.');
                 setTimeout(() => {
                     window.location.href = DEFAULT_FALLBACK_URL;
                 }, REDIRECT_DELAY_MS);
                 return;
             }
 
-            const jsonFilePath = `${DATA_FOLDER}${groupId}.json`;
-
-            fetch(jsonFilePath)
+            // Tải tệp links.json từ thư mục gốc
+            fetch(LINKS_JSON_FILE)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`Failed to load ${jsonFilePath}: ${response.status} ${response.statusText}`);
+                        // Lỗi nếu tệp links.json không được tìm thấy (ví dụ: 404 Not Found)
+                        throw new Error(`Failed to load ${LINKS_JSON_FILE}: ${response.status} ${response.statusText}`);
                     }
                     return response.json();
                 })
-                .then(groupData => {
-                    const targetUrl = groupData[linkKey];
+                .then(allLinksData => {
+                    const targetUrl = allLinksData[linkId]; // Lấy URL đích dựa trên ID
 
                     if (!targetUrl) {
-                        console.error(`Không tìm thấy linkKey "${linkKey}" trong nhóm "${groupId}".`);
+                        console.error(`Không tìm thấy linkId "${linkId}" trong tệp ${LINKS_JSON_FILE}.`);
                         setTimeout(() => {
                             window.location.href = DEFAULT_FALLBACK_URL;
                         }, REDIRECT_DELAY_MS);
