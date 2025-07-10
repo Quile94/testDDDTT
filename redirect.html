@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Đang Chuyển Hướng - Vui Lòng Chờ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    /* CSS để tạo kiểu cho trang */
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+        margin: 0;
+        background-color: #f0f2f5; /* Màu nền nhẹ nhàng */
+        color: #333;
+        text-align: center;
+    }
+
+    .loading-container {
+        background-color: #ffffff;
+        padding: 40px 60px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        max-width: 90%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .loading-image {
+        width: 100px; /* Kích thước hình ảnh tải */
+        height: 100px;
+        margin-bottom: 25px;
+    }
+
+    .loading-text {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #007bff; /* Màu sắc nổi bật cho văn bản */
+    }
+
+    .redirect-message {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 25px;
+    }
+
+    .progress-bar {
+        width: 80%;
+        height: 8px;
+        background-color: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        width: 0;
+        background-color: #28a745; /* Màu xanh lá cây */
+        border-radius: 4px;
+        transition: width linear; /* Tạo hiệu ứng chuyển động mượt mà */
+    }
+
+    .link-note {
+        font-size: 14px;
+        color: #888;
+    }
+
+    /* Ẩn nội dung khi JavaScript không bật */
+    noscript {
+        display: block;
+        margin-top: 20px;
+        font-size: 16px;
+        color: #cc0000;
+    }
+</style>
+</head>
+<body>
+    <div class="loading-container">
+        <img src="images/loading.gif" alt="Đang tải..." class="loading-image">
+
+        <p class="loading-text">Đang tải và chuyển hướng...</p>
+        <p class="redirect-message">Vui lòng chờ trong giây lát. Bạn sẽ được chuyển đến trang đích.</p>
+
+        <div class="progress-bar">
+            <div id="progressBarFill" class="progress-bar-fill"></div>
+        </div>
+
+        <p class="link-note">Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+    </div>
+
+    <noscript>
+        <p>Vui lòng bật JavaScript để trang này hoạt động.</p>
+        <p>Nếu bạn không được chuyển hướng tự động, vui lòng kiểm tra URL hoặc thử lại.</p>
+    </noscript>
+
+    <script>
+        // --- Cấu hình chuyển hướng ---
+        const REDIRECT_DELAY_MS = 2000; // THAY THẾ NÀY: Thời gian trễ trước khi chuyển hướng (ví dụ: 2000ms = 2 giây)
+        const DEFAULT_FALLBACK_URL = 'https://www.google.com/search?q=lỗi+chuyển+hướng+chung'; // THAY THẾ NÀY: URL dự phòng nếu có lỗi
+        const DATA_FOLDER = 'data/'; // THAY THẾ NÀY: Tên thư mục chứa các tệp JSON nhóm của bạn
+
+        // --- Logic JavaScript ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const groupId = urlParams.get('id');
+            const linkKey = urlParams.get('link');
+
+            const progressBarFill = document.getElementById('progressBarFill');
+
+            // Cập nhật thanh tiến trình trong suốt thời gian trễ
+            if (progressBarFill) {
+                progressBarFill.style.transitionDuration = `${REDIRECT_DELAY_MS / 1000}s`;
+                setTimeout(() => {
+                    progressBarFill.style.width = '100%';
+                }, 50); // Bắt đầu animation sau một chút để đảm bảo DOM sẵn sàng
+            }
+
+
+            if (!groupId || !linkKey) {
+                console.error('Thiếu tham số groupId hoặc linkKey trong URL.');
+                setTimeout(() => {
+                    window.location.href = DEFAULT_FALLBACK_URL;
+                }, REDIRECT_DELAY_MS);
+                return;
+            }
+
+            const jsonFilePath = `${DATA_FOLDER}${groupId}.json`;
+
+            fetch(jsonFilePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to load ${jsonFilePath}: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(groupData => {
+                    const targetUrl = groupData[linkKey];
+
+                    if (!targetUrl) {
+                        console.error(`Không tìm thấy linkKey "${linkKey}" trong nhóm "${groupId}".`);
+                        setTimeout(() => {
+                            window.location.href = DEFAULT_FALLBACK_URL;
+                        }, REDIRECT_DELAY_MS);
+                        return;
+                    }
+
+                    // Thực hiện chuyển hướng sau thời gian trễ đã định
+                    setTimeout(() => {
+                        window.location.href = targetUrl;
+                    }, REDIRECT_DELAY_MS);
+                })
+                .catch(error => {
+                    console.error('Lỗi trong quá trình tải dữ liệu hoặc chuyển hướng:', error);
+                    // Chuyển hướng đến URL dự phòng sau thời gian trễ nếu có lỗi
+                    setTimeout(() => {
+                        window.location.href = DEFAULT_FALLBACK_URL;
+                    }, REDIRECT_DELAY_MS);
+                });
+        };
+    </script>
+</body>
+</html>
